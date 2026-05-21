@@ -1,0 +1,6 @@
+@Novio.API_HostAddress = http://localhost:5295
+
+GET {{Novio.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

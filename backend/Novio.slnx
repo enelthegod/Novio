@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Novio.API/Novio.API.csproj" />
+  <Project Path="Novio.Application/Novio.Application.csproj" />
+  <Project Path="Novio.Domain/Novio.Domain.csproj" />
+  <Project Path="Novio.Infrastructure/Novio.Infrastructure.csproj" />
+</Solution>
