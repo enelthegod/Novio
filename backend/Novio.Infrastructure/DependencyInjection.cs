@@ -27,6 +27,8 @@ public static class DependencyInjection
         // Register auth service
         services.AddScoped<IAuthService, AuthService>();
 
+        services.AddScoped<IJobService, JobService>();
+
         // Configure JWT authentication
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
