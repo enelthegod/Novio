@@ -24,10 +24,18 @@ public static class DependencyInjection
         services.AddScoped<IJobRepository, JobRepository>();
         services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
 
-        // Register auth service
+     
+
+
         services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IJobService, JobService>();
+
+        services.AddScoped<IApplicationService, ApplicationService>();
+
+
+
+
 
         // Configure JWT authentication
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
