@@ -1,6 +1,7 @@
 using Microsoft.OpenApi;
 using Novio.Infrastructure;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
