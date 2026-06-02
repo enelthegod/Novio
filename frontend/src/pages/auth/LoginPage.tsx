@@ -13,7 +13,7 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { login: saveToContext } = useAuth();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         // Prevent default form page reload
         e.preventDefault();
         setError('');

@@ -14,7 +14,7 @@ export default function RegisterPage() {
     const navigate = useNavigate();
     const { login: saveToContext } = useAuth();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
