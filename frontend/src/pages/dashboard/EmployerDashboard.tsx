@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getMyJobs, createJob, deleteJob } from '../../api/jobs';
 import { getJobApplications, updateApplicationStatus } from '../../api/applications';
 import { useAuth } from '../../context/useAuth';
+import Navbar from '../../components/Navbar';
 import type { Job, JobApplication } from '../../types';
 
 export default function EmployerDashboard() {
@@ -12,7 +13,6 @@ export default function EmployerDashboard() {
     const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
     const [applications, setApplications] = useState<JobApplication[]>([]);
 
-    // Form state
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [company, setCompany] = useState('');
@@ -25,7 +25,6 @@ export default function EmployerDashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Redirect if not employer
         if (user && user.role !== 'Employer') navigate('/jobs');
     }, [user, navigate]);
 
@@ -44,7 +43,6 @@ export default function EmployerDashboard() {
                 title, description, company, location,
                 salary: Number(salary)
             });
-            // Add new job to list without refetching
             setJobs(prev => [newJob, ...prev]);
             setShowForm(false);
             resetForm();
@@ -71,7 +69,6 @@ export default function EmployerDashboard() {
 
     const handleViewApplications = async (jobId: number) => {
         if (selectedJobId === jobId) {
-            // Toggle off if same job clicked
             setSelectedJobId(null);
             setApplications([]);
             return;
@@ -84,7 +81,6 @@ export default function EmployerDashboard() {
     const handleStatusChange = async (appId: number, status: string) => {
         try {
             await updateApplicationStatus(appId, status);
-            // Update status locally without refetching
             setApplications(prev =>
                 prev.map(a => a.id === appId ? { ...a, status: status as JobApplication['status'] } : a)
             );
@@ -105,23 +101,14 @@ export default function EmployerDashboard() {
         Rejected: 'bg-red-50 text-red-700',
     };
 
+    // Suppress unused warning
+    void logout;
+
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Navbar */}
-            <nav className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="max-w-5xl mx-auto flex justify-between items-center">
-                    <Link to="/jobs" className="text-xl font-bold text-blue-600">Novio</Link>
-                    <div className="flex gap-3 items-center">
-                        <span className="text-sm text-gray-600">Hi, {user?.name}</span>
-                        <button onClick={logout} className="text-sm text-gray-500 hover:text-red-500 transition">
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
             <div className="max-w-5xl mx-auto px-6 py-10">
-                {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-2xl font-bold text-gray-900">My Jobs</h1>
                     <button
@@ -132,7 +119,6 @@ export default function EmployerDashboard() {
                     </button>
                 </div>
 
-                {/* Create Job Form */}
                 {showForm && (
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">New Job</h2>
@@ -180,7 +166,6 @@ export default function EmployerDashboard() {
                     </div>
                 )}
 
-                {/* Jobs List */}
                 {loading ? (
                     <p className="text-center text-gray-500">Loading...</p>
                 ) : jobs.length === 0 ? (
@@ -213,7 +198,6 @@ export default function EmployerDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Applications for this job */}
                                 {selectedJobId === job.id && (
                                     <div className="mt-4 border-t pt-4">
                                         {applications.length === 0 ? (
@@ -230,7 +214,6 @@ export default function EmployerDashboard() {
                                                             <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[app.status]}`}>
                                                                 {app.status}
                                                             </span>
-                                                            {/* Employer changes application status */}
                                                             <select
                                                                 value={app.status}
                                                                 onChange={e => handleStatusChange(app.id, e.target.value)}

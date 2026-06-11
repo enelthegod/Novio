@@ -6,6 +6,7 @@ import JobsPage from './pages/jobs/JobsPage';
 import JobDetailPage from './pages/jobs/JobDetailPage';
 import EmployerDashboard from './pages/dashboard/EmployerDashboard';
 import MyApplicationsPage from './pages/dashboard/MyApplicationsPage';
+import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,6 +29,8 @@ function App() {
                             <MyApplicationsPage />
                         </ProtectedRoute>
                     } />
+                    {/* Catch all unknown routes */}
+                    <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>
