@@ -19,3 +19,15 @@ export const getJobApplications = async (jobId: number): Promise<JobApplication[
 export const updateApplicationStatus = async (id: number, status: string): Promise<void> => {
   await api.put(`/Applications/${id}/status`, { status });
 };
+
+
+export const uploadCv = async (applicationId: number, file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post(`/Applications/${applicationId}/cv`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    return response.data.filePath;
+};

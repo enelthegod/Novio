@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getJobById } from '../../api/jobs';
-import { applyForJob } from '../../api/applications';
+import { applyForJob, uploadCv } from '../../api/applications';
 import { useAuth } from '../../context/useAuth';
 import Navbar from '../../components/Navbar';
 import type { Job } from '../../types';
@@ -11,7 +11,13 @@ export default function JobDetailPage() {
     const [loading, setLoading] = useState(true);
     const [applying, setApplying] = useState(false);
     const [applied, setApplied] = useState(false);
+    const [applicationId, setApplicationId] = useState<number | null>(null);
     const [error, setError] = useState('');
+
+    // CV upload state
+    const [cvFile, setCvFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [uploaded, setUploaded] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -29,12 +35,26 @@ export default function JobDetailPage() {
         setApplying(true);
         setError('');
         try {
-            await applyForJob({ jobId: Number(id) });
+            const result = await applyForJob({ jobId: Number(id) });
+            setApplicationId(result.id);
             setApplied(true);
         } catch {
             setError('Could not apply. You may have already applied.');
         } finally {
             setApplying(false);
+        }
+    };
+
+    const handleCvUpload = async () => {
+        if (!cvFile || !applicationId) return;
+        setUploading(true);
+        try {
+            await uploadCv(applicationId, cvFile);
+            setUploaded(true);
+        } catch {
+            setError('Failed to upload CV');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -81,9 +101,38 @@ export default function JobDetailPage() {
                         {error && (
                             <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
                         )}
+
                         {applied ? (
-                            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
-                                ✅ Application submitted successfully!
+                            <div className="space-y-4">
+                                <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
+                                    ✅ Application submitted successfully!
+                                </div>
+
+                                {/* CV upload section */}
+                                {!uploaded ? (
+                                    <div className="border border-gray-200 rounded-xl p-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Upload your CV (PDF, optional)
+                                        </label>
+                                        <input
+                                            type="file"
+                                            accept=".pdf"
+                                            onChange={e => setCvFile(e.target.files?.[0] ?? null)}
+                                            className="block w-full text-sm text-gray-500 mb-3"
+                                        />
+                                        <button
+                                            onClick={handleCvUpload}
+                                            disabled={!cvFile || uploading}
+                                            className="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+                                        >
+                                            {uploading ? 'Uploading...' : 'Upload CV'}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-sm font-medium">
+                                        📄 CV uploaded successfully!
+                                    </div>
+                                )}
                             </div>
                         ) : user?.role === 'Applicant' || !isAuthenticated ? (
                             <button

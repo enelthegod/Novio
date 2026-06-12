@@ -21,7 +21,7 @@ export default function EmployerDashboard() {
     const [formError, setFormError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -100,9 +100,6 @@ export default function EmployerDashboard() {
         Accepted: 'bg-green-50 text-green-700',
         Rejected: 'bg-red-50 text-red-700',
     };
-
-    // Suppress unused warning
-    void logout;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -206,36 +203,46 @@ export default function EmployerDashboard() {
                                             <div className="space-y-3">
                                                 {applications.map(app => (
                                                     <div key={app.id} className="flex justify-between items-center bg-gray-50 rounded-xl px-4 py-3">
-                                                        <div>
-                                                            <p className="font-medium text-gray-900 text-sm">{app.applicantName}</p>
-                                                            <p className="text-gray-500 text-xs">{app.applicantEmail}</p>
-                                                        </div>
-                                                        <div className="flex gap-2 items-center">
-                                                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[app.status]}`}>
-                                                                {app.status}
-                                                            </span>
-                                                            <select
-                                                                value={app.status}
-                                                                onChange={e => handleStatusChange(app.id, e.target.value)}
-                                                                className="text-xs border border-gray-300 rounded-lg px-2 py-1 focus:outline-none"
-                                                            >
-                                                                <option value="Pending">Pending</option>
-                                                                <option value="Reviewed">Reviewed</option>
-                                                                <option value="Accepted">Accepted</option>
-                                                                <option value="Rejected">Rejected</option>
-                                                            </select>
-                                                        </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-900 text-sm">{app.applicantName}</p>
+                                                        <p className="text-gray-500 text-xs">{app.applicantEmail}</p>
+                                                        {app.cvFilePath && (
+                                                              <a>
+                                                                href={`http://localhost:5000${app.cvFilePath}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 text-xs hover:underline"
+                                                            
+                                                                📄 View CV
+                                                            </a>
+                                                        )}
                                                     </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                                    <div className="flex gap-2 items-center">
+                                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[app.status]}`}>
+                                                            {app.status}
+                                                        </span>
+                                                        <select
+                                                            value={app.status}
+                                                            onChange={e => handleStatusChange(app.id, e.target.value)}
+                                                            className="text-xs border border-gray-300 rounded-lg px-2 py-1 focus:outline-none"
+                                                        >
+                                                            <option value="Pending">Pending</option>
+                                                            <option value="Reviewed">Reviewed</option>
+                                                            <option value="Accepted">Accepted</option>
+                                                            <option value="Rejected">Rejected</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
-                        ))}
+                        )}
                     </div>
-                )}
+                ))}
             </div>
+            )}
         </div>
-    );
+    </div >
+);
 }

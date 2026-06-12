@@ -15,4 +15,7 @@ public interface IApplicationService
 
     // Employer changes application status
     Task UpdateStatusAsync(int applicationId, UpdateApplicationStatusDto dto, int employerId);
+
+    // New - upload CV for an existing application
+    Task UploadCvAsync(int applicationId, int applicantId, string filePath);
 }

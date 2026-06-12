@@ -86,6 +86,24 @@ public class ApplicationService : IApplicationService
         await _applicationRepository.UpdateAsync(application);
     }
 
+
+    public async Task UploadCvAsync(int applicationId, int applicantId, string filePath)
+    {
+        var application = await _applicationRepository.GetByIdAsync(applicationId);
+
+        if (application == null)
+            throw new Exception("Application not found");
+
+        // Only the applicant who owns this application can upload a CV
+        if (application.ApplicantId != applicantId)
+            throw new Exception("Unauthorized");
+
+        application.CvFilePath = filePath;
+        await _applicationRepository.UpdateAsync(application);
+    }
+
+
+
     // Converts JobApplication entity to ApplicationResponseDto
     private static ApplicationResponseDto MapToDto(JobApplication a) => new()
     {

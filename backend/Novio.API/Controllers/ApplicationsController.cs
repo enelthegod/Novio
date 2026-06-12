@@ -79,6 +79,54 @@ public class ApplicationsController : ControllerBase
         }
     }
 
+
+
+
+
+    // Applicant uploads CV for their application
+    [HttpPost("{id}/cv")]
+    [Authorize(Roles = "Applicant")]
+    public async Task<IActionResult> UploadCv(int id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        // Only allow PDF files
+        if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+            return BadRequest("Only PDF files are allowed");
+
+        // Generate unique filename to avoid collisions
+        var fileName = $"{Guid.NewGuid()}.pdf";
+        var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+        // Create directory if it doesn't exist
+        Directory.CreateDirectory(uploadsPath);
+
+        var filePath = Path.Combine(uploadsPath, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        try
+        {
+            var applicantId = GetUserId();
+            // Store relative path so frontend can build the URL
+            await _applicationService.UploadCvAsync(id, applicantId, $"/uploads/{fileName}");
+            return Ok(new { filePath = $"/uploads/{fileName}" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
+
+
+
+
     // Helper - reads user id from JWT token
     private int GetUserId() =>
         int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

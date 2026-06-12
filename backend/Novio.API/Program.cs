@@ -20,6 +20,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
+
+
+
+
+// Serve files from wwwroot (so /uploads/file.pdf is accessible)
+app.UseStaticFiles();
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
