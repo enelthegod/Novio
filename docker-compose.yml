@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: novio-db
+    environment:
+      POSTGRES_DB: novio_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: novio-api
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=novio_db;Username=postgres;Password=postgres"
+      Jwt__Key: "novio-super-secret-key-minimum-32-characters-long"
+      Jwt__Issuer: "novio-api"
+      Jwt__Audience: "novio-client"
+      Jwt__ExpiryDays: "7"
+    ports:
+      - "5000:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: novio-frontend
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:

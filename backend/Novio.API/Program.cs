@@ -1,4 +1,5 @@
 using Novio.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,14 @@ var app = builder.Build();
 
 
 
+// Automatically apply pending migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Novio.Infrastructure.Data.AppDbContext>();
+    db.Database.Migrate();
+}
+
+app.UseStaticFiles();
 
 
 
